@@ -19,10 +19,18 @@ The plans are to convert the webm files into HLS metadata + MPEG-TS files.
 ## TODO
 
 * measure chunk durations (at least the last one) via ffprobe
-* autogen m3u8 file
+* autogen m3u8 file and ffmpeg script
 
 
-## NOTES
+## HLS NOTES
+
+Sample
+
+* http://www.flashls.org/playlists/test_001/stream.m3u8
+* http://www.flashls.org/playlists/test_001/stream_1000k_48k_640x360.m3u8
+* http://www.flashls.org/playlists/test_001/stream_1000k_48k_640x360_000.ts
+
+Spec notes
 
 * EXT-X-TARGETDURATION http://tools.ietf.org/html/draft-pantos-http-live-streaming-13#section-3.4.2
 * EXTINF http://tools.ietf.org/html/draft-pantos-http-live-streaming-13#section-3.3.2
