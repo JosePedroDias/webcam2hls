@@ -2,33 +2,39 @@ Trying to send webcam video to node.js for video recording on server-side.
 
 Using [MediaStreamRecorder](https://github.com/streamproc/MediaStreamRecorder).
 
-On Chrome only video is encoded, on firefox both video and audio.
+Using the ffmpeg toolset to do the lifting.
+
+**NOTE:** On Chrome only video is encoded, on firefox both video and audio.
 
 The plans are to convert the webm files into HLS metadata + MPEG-TS files.
-	
-	ffprobe 48vofi_0.webm
-	ffprobe 48vofi_1.webm
-	ffprobe 48vofi_2.webm
 
-	# -force_key_frames 50 ?
-    ffmpeg -i 48vofi_0.webm -vcodec libx264 -acodec libfaac -tune zerolatency -r 25 -profile:v baseline -b:v 800k -b:a 48k -f mpegts 48vofi_0.ts
-    ffmpeg -i 48vofi_1.webm -vcodec libx264 -acodec libfaac -tune zerolatency -r 25 -profile:v baseline -b:v 800k -b:a 48k -f mpegts 48vofi_1.ts
-    ffmpeg -i 48vofi_2.webm -vcodec libx264 -acodec libfaac -tune zerolatency -r 25 -profile:v baseline -b:v 800k -b:a 48k -f mpegts 48vofi_2.ts
 
 
 ## TODO
 
-* measure chunk durations (at least the last one) via ffprobe
-* autogen m3u8 file and ffmpeg script
+* fix borked ts or m3u8 (the playback is weird)
+* learn how to generate this tasks in the bg
+* offer API to query for task completion
+* support live streaming
+
+
+
+## Example ffmpeg commands
+
+	ffprobe -v quiet -print_format json -show_format j6cffc_0.ts
+
+	ffmpeg -i j6cffc_0.webm -vcodec libx264 -acodec libfaac -r 25 -profile:v baseline -b:v 800k -b:a 48k -f mpegts -y j6cffc_0.ts
+
 
 
 ## HLS NOTES
 
-Sample
+Sample HLS files:
 
 * http://www.flashls.org/playlists/test_001/stream.m3u8
 * http://www.flashls.org/playlists/test_001/stream_1000k_48k_640x360.m3u8
 * http://www.flashls.org/playlists/test_001/stream_1000k_48k_640x360_000.ts
+
 
 Spec notes
 
