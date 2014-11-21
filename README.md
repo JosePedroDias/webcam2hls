@@ -24,6 +24,8 @@ The plans are to convert the webm files into HLS metadata + MPEG-TS files on the
 
 ### FFMPEG on Ubuntu Linux
 
+get up-to-date additional dependencies
+
 	sudo add-apt-repository ppa:mc3man/trusty-media
 
 	sudo apt-get update
@@ -32,7 +34,13 @@ The plans are to convert the webm files into HLS metadata + MPEG-TS files on the
 
 	sudo apt-get install faac libde265 libquvi-dev libvncserver-dev libvpx-dev x264 x265 libass-dev libfdk-aac-dev libcaca-dev libmp3lame-dev libopencore-amrnb-dev libopencore-amrwb-dev libopus-dev librtmp-dev libtheora-dev libvorbis-dev libvo-aacenc-dev libvo-amrwbenc-dev libwebp-dev libx265-dev
 
-get from source... https://www.ffmpeg.org/download.html
+we will now compile ffmpeg from source
+
+	wget https://www.ffmpeg.org/releases/ffmpeg-snapshot.tar.bz2
+
+	tar xf ffmpeg-snapshot.tar.bz2
+
+	cd ffmpeg
 
 	./configure --enable-version3 --enable-gpl --enable-nonfree --enable-shared --enable-libcaca --enable-libass --enable-libfaac --enable-libfdk-aac --enable-libfreetype --enable-libmp3lame --enable-libopencore-amrnb --enable-libopencore-amrwb --enable-libopus --enable-libquvi --enable-librtmp --enable-libtheora --enable-libv4l2 --enable-libvo-aacenc --enable-libvorbis --enable-libvo-aacenc --enable-libvo-amrwbenc --enable-libvpx --enable-libwebp --enable-libx264 --enable-libx265 --enable-x11grab --disable-avutil
 
