@@ -25,6 +25,8 @@ Besides the main `server.js`, `handle.js` does the format conversion and m3u8 ge
 
 ### FFMPEG on Ubuntu Linux
 
+(I tried to log these steps the best I could but didn't start from a clean ubuntu distro so if you find additional/incorrect info, please let me know)
+
 get up-to-date additional dependencies
 
 	sudo add-apt-repository ppa:mc3man/trusty-media
