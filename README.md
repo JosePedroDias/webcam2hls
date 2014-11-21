@@ -69,7 +69,7 @@ press start
 
 copy the handle.js invocation call to your console, ex:
 
-    node handle.js <name>.m3u8
+    node handle.js <name>
 
 play the resulting HLS video:
 	
