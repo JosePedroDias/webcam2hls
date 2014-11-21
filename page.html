@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+
+		<title>testing media stream recorder</title>
+
+		<style type="text/css">
+			body {
+				font-family: sans-serif;
+			}
+		</style>
+	</head>
+
+	<body>
+		<h1>testing media stream recorder</h1>
+
+		<script src="./node_modules/msr/MediaStreamRecorder.js"></script>
+
+		<button onclick="log('start'); mediaRecorder.start(3000);">start</button>
+		<button onclick="log('stop');  mediaRecorder.stop();">stop</button>
+
+		<script>
+			var mediaConstraints = {
+			    audio: !!navigator.mozGetUserMedia, // don't forget audio!
+			    video: true                         // don't forget video!
+			};
+
+			navigator.getUserMedia(mediaConstraints, onMediaSuccess, onMediaError);
+
+			function log(msg) {
+				var el = document.createElement('div');
+				el.appendChild( document.createTextNode(msg) );
+				document.body.appendChild(el);
+			}
+
+			function send(url, blob) {
+				var xhr = new XMLHttpRequest();
+				xhr.open('POST', url, true);
+				xhr.responseType = 'text/plain';
+				xhr.onload = function(e) {
+					if (this.status === 200) {
+						console.log(this.response);
+					}
+				};
+				xhr.send(blob);
+			}
+
+			function makeABlob(text, blob) {
+				var blobURL = URL.createObjectURL(blob);
+				var aEl = document.createElement('a');
+				aEl.appendChild( document.createTextNode(text) );
+				aEl.href = blobURL;
+				document.body.appendChild(aEl);
+			        //document.write('<a href="' + blobURL + '">' + blobURL + '</a>');
+			}
+
+			var maxI = Math.pow(32, 6); // length 6
+			
+			function randomString() {
+				return ( ~~( Math.random() * maxI ) ).toString(32);
+			}
+
+			var mediaRecorder;
+			var count = 0;
+			var name = randomString();
+
+			log('name: "' + name + '"');
+			log('count: "' + count + '"');
+
+			function onMediaSuccess(stream) {
+				log('media success');
+				
+			    mediaRecorder = new MediaStreamRecorder(stream);
+			    
+			    mediaRecorder.mimeType = 'video/webm';
+			    
+			    mediaRecorder.ondataavailable = function(blob) {
+			    	log('sending chunk ' + name + ' ' + count + '...');
+			    	send('/chunk/' + name + '/' + count, blob);
+
+			    	//makeABlob(count, blob);
+
+			    	++count;
+			    };
+			}
+
+			function onMediaError(e) {
+			    log('media error');
+			}
+		</script>
+	</body>
+</html>
