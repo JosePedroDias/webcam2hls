@@ -1,18 +1,55 @@
-Trying to send webcam video to node.js for video recording on server-side.
+My idea is to make use of the [MediaStream Recording API](http://www.w3.org/TR/mediastream-recording/)
+to stream desktop or mobile videos on the fly to the [HTTP Live Streaming](https://developer.apple.com/streaming/) format.
 
-Using [MediaStreamRecorder](https://github.com/streamproc/MediaStreamRecorder).
+Trying to send webcam video to node.js for video recording and conversion on server-side.
 
-Using the ffmpeg toolset to do the lifting.
+Using [MediaStreamRecorder](https://github.com/streamproc/MediaStreamRecorder) to polyfill the MediaStream Recording API,
+capturing `video/webm` 10 second files to the server.
 
-**NOTE:** On Chrome only video is encoded, on firefox both video and audio.
+Using the [ffmpeg toolset](https://www.ffmpeg.org/) to do the video processing heavy-lifting tasks.
 
-The plans are to convert the webm files into HLS metadata + MPEG-TS files.
+**NOTE:** For capturing purposes, Google Chrome only captures video, while Firefox captures both video and audio.
+
+The plans are to convert the webm files into HLS metadata + MPEG-TS files on the fly.
+
+
+
+## How to install
+
+
+### FFMPEG on Mac OSX
+
+	brew install ffmpeg --with-fdk-aac --with-ffplay --with-freetype --with-frei0r --with-libass --with-libcaca --with-libquvi --with-libvidstab --with-libvo-aacenc --with-libvorbis --with-libvpx --with-opencore-amr --with-openjpeg --with-openssl --with-opus --with-rtmpdump --with-speex --with-theora --with-tools --with-x265
+
+
+### FFMPEG on Ubuntu Linux
+
+	sudo add-apt-repository ppa:mc3man/trusty-media
+
+	sudo apt-get update
+
+	sudo apt-get dist-upgrade
+
+	sudo apt-get install faac libde265 libquvi-dev libvncserver-dev libvpx-dev x264 x265 libass-dev libfdk-aac-dev libcaca-dev libmp3lame-dev libopencore-amrnb-dev libopencore-amrwb-dev libopus-dev librtmp-dev libtheora-dev libvorbis-dev libvo-aacenc-dev libvo-amrwbenc-dev libwebp-dev libx265-dev
+
+get from source... https://www.ffmpeg.org/download.html
+
+	./configure --enable-version3 --enable-gpl --enable-nonfree --enable-shared --enable-libcaca --enable-libass --enable-libfaac --enable-libfdk-aac --enable-libfreetype --enable-libmp3lame --enable-libopencore-amrnb --enable-libopencore-amrwb --enable-libopus --enable-libquvi --enable-librtmp --enable-libtheora --enable-libv4l2 --enable-libvo-aacenc --enable-libvorbis --enable-libvo-aacenc --enable-libvo-amrwbenc --enable-libvpx --enable-libwebp --enable-libx264 --enable-libx265 --enable-x11grab --disable-avutil
+
+	make
+
+	sudo make install
+
+
+### Additional dependencies
+
+	npm install
 
 
 
 ## How to use
 
-	node serve &
+	node serve.js &
 
 in the browser, visit `http://127.0.0.1:8001`
 
@@ -20,9 +57,13 @@ accept video and mic sharing notification
 
 press start
 
-...press stop after some 3s packets have been sent
+...press stop after some packets have been sent
 
-copy the handle.js invocation call to your console
+copy the handle.js invocation call to your console, ex:
+
+    node handle.js <name>.m3u8
+
+play the resulting HLS video:
 	
 	ffplay|vlc|mplayer <name>.m3u8
 
