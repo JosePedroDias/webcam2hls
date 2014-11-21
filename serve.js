@@ -8,8 +8,8 @@ var files = {
 
 var PORT = 8000;
 
-var respond = function(res, pair) {
-	res.writeHeader(200, {'Content-Type': pair[0]});
+var respond = function(res, pair, code) {
+	res.writeHeader(code || 200, {'Content-Type': pair[0]});
 	res.write(pair[1]);  
 	res.end();
 };
@@ -22,20 +22,27 @@ http.createServer(function(req, res) {
     	respond(res, f);	
     }
     else if (u.indexOf('/chunk/') === 0) {
-    	var p = u.split('/');
-    	var n = p[1];
-    	var c = p[2];
+    	var parts = u.split('/');
+    	var n = parts[2];
+    	var c = parts[3];
     	var f = n + '_' + c + '.webm';
-		console.log('got chunk %s %s', n, c);
-		var stream = fs.createWriteStream(f);
-		stream.on('end', function() {
-			respond(res, ['text/plain', ['GOT', n, c, '->', f].join(' ') ] );
-		});
-		req.setEncoding('binary');
+    	var msg = ['got', n, c, '->', f].join(' ');
+		console.log(msg);
+
+		var stream = fs.createWriteStream(f, {encoding:'binary'});
+		/*stream.on('end', function() {
+			respond(res, ['text/plain', msg]);
+		});*/
+		
+		//req.setEncoding('binary');
+		
 		req.pipe(stream);
+		req.on('end', function() {
+			respond(res, ['text/plain', msg]);
+		});
     }
     else {
-    	respond(res, ['text/plain', 'WAT? ' + u]);
+    	respond(res, ['text/plain', '404', 404]);
     }
 }).listen(PORT);  
 console.log('MediaStreamRecorder app listening to port %s...', PORT);

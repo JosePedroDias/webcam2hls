@@ -3,22 +3,34 @@
 	<head>
 		<meta charset="utf-8">
 
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+
 		<title>testing media stream recorder</title>
 
 		<style type="text/css">
 			body {
 				font-family: sans-serif;
+				font-size: 1.3em;
+			}
+
+			.not-authorized .gui,
+			.authorized .notice {
+				display: none;
 			}
 		</style>
 	</head>
 
-	<body>
+	<body class="not-authorized">
 		<h1>testing media stream recorder</h1>
 
 		<script src="MediaStreamRecorder.js"></script>
 
-		<button onclick="log('start'); mediaRecorder.start(3000);">start</button>
-		<button onclick="log('stop');  mediaRecorder.stop();">stop</button>
+		<div class="notice">please accept webcam permissions above</div>
+
+		<div class="gui">
+			<button onclick="log('start'); mediaRecorder.start(3000);">start</button>
+			<button onclick="log('stop');  mediaRecorder.stop();">stop</button>
+		</div>
 
 		<script>
 			var mediaConstraints = {
@@ -34,15 +46,23 @@
 				document.body.appendChild(el);
 			}
 
+			// https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/Sending_and_Receiving_Binary_Data
 			function send(url, blob) {
 				var xhr = new XMLHttpRequest();
 				xhr.open('POST', url, true);
+
 				xhr.responseType = 'text/plain';
+				xhr.setRequestHeader('Content-Type', 'video/webm');
+				//xhr.setRequestHeader("Content-Length", blob.length);
+
 				xhr.onload = function(e) {
 					if (this.status === 200) {
 						console.log(this.response);
 					}
 				};
+
+				//var blob2 = new Blob(blob, {type: 'video/webm'});
+
 				xhr.send(blob);
 			}
 
@@ -52,7 +72,6 @@
 				aEl.appendChild( document.createTextNode(text) );
 				aEl.href = blobURL;
 				document.body.appendChild(aEl);
-			        //document.write('<a href="' + blobURL + '">' + blobURL + '</a>');
 			}
 
 			var maxI = Math.pow(32, 6); // length 6
@@ -65,11 +84,9 @@
 			var count = 0;
 			var name = randomString();
 
-			log('name: "' + name + '"');
-			log('count: "' + count + '"');
-
 			function onMediaSuccess(stream) {
-				log('media success');
+				//log('media success');
+				document.body.className = 'authorized';
 
 			    mediaRecorder = new MediaStreamRecorder(stream);
 			    
@@ -77,8 +94,8 @@
 			    
 			    mediaRecorder.ondataavailable = function(blob) {
 			    	log('sending chunk ' + name + ' ' + count + '...');
+			    	
 			    	send('/chunk/' + name + '/' + count, blob);
-
 			    	//makeABlob(count, blob);
 
 			    	++count;
