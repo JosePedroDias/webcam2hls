@@ -30,7 +30,7 @@ copy the handle.js invocation call to your console
 
 ## TODO
 
-### 1
+### m3u8 integrity
 
 m3u8 almost perfect
 
@@ -40,14 +40,16 @@ start_time accumulation logic not clear
 
 https://trac.ffmpeg.org/ticket/3353
 
-### 2 firefox sent files not correctly processed
+### firefox sent files not correctly processed
 
-### 3 bg tasks
+### serve m3u8 and ts files (nice-to-have)
+
+### bg tasks
 
 * learn how to generate this tasks in the bg
 * offer API to query for task completion
 
-### 4 live 
+### live streaming
 
 * support live streaming
 
