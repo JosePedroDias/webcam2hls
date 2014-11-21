@@ -26,6 +26,10 @@ copy the handle.js invocation call to your console
 	
 	ffplay|vlc|mplayer <name>.m3u8
 
+Besides the app at / and the MediaStreamRecorder script,
+the server also serves video files correctly
+(with ranged request support and correct mime types for `mp4`, `webm`, `m3u8` and `ts` files).
+
 
 
 ## TODO
@@ -41,8 +45,6 @@ start_time accumulation logic not clear
 https://trac.ffmpeg.org/ticket/3353
 
 ### firefox sent files not correctly processed
-
-### serve m3u8 and ts files (nice-to-have)
 
 ### bg tasks
 

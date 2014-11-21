@@ -6,6 +6,15 @@ var files = {
 	'/MediaStreamRecorder.js':  ['application/javascript', fs.readFileSync('node_modules/msr/MediaStreamRecorder.js').toString()]
 };
 
+var mimeTypes = {
+	'js':   'application/javascript',
+	'html': 'text/html',
+	'ts':   'video/mp2t',
+	'mp4':  'video/mp4',
+	'webm': 'video/webm',
+	'm3u8': 'application/x-mpegURL'
+};
+
 var PORT = 8001;
 
 var respond = function(res, pair, code) {
@@ -42,7 +51,53 @@ http.createServer(function(req, res) {
 		});
     }
     else {
-    	respond(res, ['text/plain', '404', 404]);
+    	// serve files, supporting ranged requests
+
+    	var path = u.substring(1);
+    	var mimeType = mimeTypes[ u.split('.').pop() ];
+
+    	fs.stat('./' + path, function(err, stats) {
+    		if (err) {
+    			return respond(res, ['text/plain', '404', 404]);
+    		}
+
+    		var total = stats.size;
+
+			if (req.headers.range) { // ranged request
+				var range        = req.headers.range;
+				var parts        = range.replace(/bytes=/, '').split('-');
+				var partialStart = parts[0];
+				var partialEnd   = parts[1];
+				var start        = parseInt(partialStart, 10);
+				var end          = partialEnd ? parseInt(partialEnd, 10) : total-1;
+				var chunkSize    = (end - start) + 1;
+
+				var fStream = fs.createReadStream(path, {
+					start: start,
+					end:   end
+				});
+
+				var rangeS = ['bytes ', start, '-', end, '/', total].join('');
+
+				res.writeHead(206, { // ranged download
+					'Content-Range':  rangeS,
+					'Accept-Ranges':  'bytes',
+					'Content-Length': chunkSize,
+					'Content-Type':   mimeType
+				});
+
+				console.log([u, 206, mimeType, rangeS].join(' '));
+				fStream.pipe(res);
+			}
+			else { // regular request
+				res.writeHead(200, { // regular download
+					'Content-Length': total,
+					'Content-Type':   mimeType
+				});
+				console.log([u, 200, mimeType, 'all'].join(' '));
+				fs.createReadStream(path).pipe(res);
+			}
+    	});
     }
 }).listen(PORT);  
-console.log('MediaStreamRecorder app listening to port %s...', PORT);
+console.log('webcam2hls server listening on port %s...', PORT);
