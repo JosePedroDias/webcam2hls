@@ -1,16 +1,17 @@
+**This project is WORK IN PROGRESS.**
+
 My idea is to make use of the [MediaStream Recording API](http://www.w3.org/TR/mediastream-recording/)
-to stream desktop or mobile videos on the fly to the [HTTP Live Streaming](https://developer.apple.com/streaming/) format.
+to stream desktop or mobile video on the fly to the [HTTP Live Streaming](https://developer.apple.com/streaming/) format,
+for other terminals to consume.
 
-Trying to send webcam video to node.js for video recording and conversion on server-side.
-
-Using [MediaStreamRecorder](https://github.com/streamproc/MediaStreamRecorder) to polyfill the MediaStream Recording API,
+I'm using [MediaStreamRecorder](https://github.com/streamproc/MediaStreamRecorder) to polyfill the MediaStream Recording API,
 capturing `video/webm` 10 second files to the server.
 
-Using the [ffmpeg toolset](https://www.ffmpeg.org/) to do the video processing heavy-lifting tasks.
+Using the [ffmpeg toolset](https://www.ffmpeg.org/) to do the video processing heavy-lifting tasks (probing video info and webm to mpegts conversion).
+
+Besides the main server.js, handle.js does the format conversion and m3u8 generation - will probably invoke these tasks automatically soon.
 
 **NOTE:** For capturing purposes, Google Chrome only captures video, while Firefox captures both video and audio.
-
-The plans are to convert the webm files into HLS metadata + MPEG-TS files on the fly.
 
 
 
