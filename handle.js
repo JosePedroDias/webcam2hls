@@ -69,8 +69,8 @@ var computeDuration = function(f, cb) {
 
 // o is an object with keys f and t0
 var convertWebmToHtmlts = function(o, cb) {
-	// var out = [];
-	// var err = [];
+	var out = [];
+	var err = [];
 
 	var t0 = o.t0;
 	var fp = __dirname + '/' + o.f;
@@ -78,6 +78,8 @@ var convertWebmToHtmlts = function(o, cb) {
 
 	var args = [
 		'/opt/ffmpeg/bin/ffmpeg',
+		'-v', 'quiet', // less verbose
+		'-loglevel', 'error',
 		'-i', fp, // inpuf file(s)
 		'-vcodec', 'libx264', // video codec
 		'-acodec', 'libfaac', // audio codec
@@ -103,18 +105,20 @@ var convertWebmToHtmlts = function(o, cb) {
 
 	var proc = child_process.spawn(cmd, args);
 
-	/*proc.stdout.on('data', function(data) {
+	proc.stdout.on('data', function(data) {
 		out.push( data.toString() );
 	});
 
 	proc.stderr.on('data', function(data) {
 		err.push( data.toString() );
 	});
-*/
-	proc.on('close', function() {
-		// console.log('\nOUT\n' + out.join('')+ '\n\n');
-		// console.log('\nERR\n' + err.join('')+ '\n\n');
 
+	proc.on('close', function() {
+		out = out.join('').trim();
+		err = err.join('').trim();
+		if (out) { console.log('\nOUT\n' + out + '\n'); }
+		if (err) { console.log('\nERR\n' + err + '\n'); }
+		
 		cb(null, fp2);
 	});
 };

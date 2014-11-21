@@ -25,11 +25,15 @@
 
 		<script src="MediaStreamRecorder.js"></script>
 
+		<script>
+			var DT = 10000; // 10 seconds per file
+		</script>
+
 		<div class="notice">please accept webcam permissions above</div>
 
 		<div class="gui">
-			<button onclick="log('start'); mediaRecorder.start(3000);">start</button>
-			<button onclick="log('stop');  mediaRecorder.stop();">stop</button>
+			<button onclick="log('starting'); mediaRecorder.start(DT);">start</button>
+			<button onclick="log('stopping'); mediaRecorder.stop(); log('once done: node handle.js ' + name)">stop</button>
 		</div>
 
 		<script>
@@ -83,10 +87,9 @@
 			var mediaRecorder;
 			var count = 0;
 			var name = randomString();
-			log('once done: node handle.js ' + name);
 
 			function onMediaSuccess(stream) {
-				//log('media success');
+				log('will start capturing and sending ' + (DT/1000) + 's videos when you press start');
 				document.body.className = 'authorized';
 
 			    mediaRecorder = new MediaStreamRecorder(stream);
@@ -94,7 +97,7 @@
 			    mediaRecorder.mimeType = 'video/webm';
 			    
 			    mediaRecorder.ondataavailable = function(blob) {
-			    	log('sending chunk ' + name + ' ' + count + '...');
+			    	log('sending chunk ' + name + ' #' + count + '...');
 			    	
 			    	send('/chunk/' + name + '/' + count, blob);
 			    	//makeABlob(count, blob);

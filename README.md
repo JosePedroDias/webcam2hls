@@ -40,12 +40,14 @@ start_time accumulation logic not clear
 
 https://trac.ffmpeg.org/ticket/3353
 
-### 2 bg tasks
+### 2 firefox sent files not correctly processed
+
+### 3 bg tasks
 
 * learn how to generate this tasks in the bg
 * offer API to query for task completion
 
-### 3 live 
+### 4 live 
 
 * support live streaming
 
