@@ -30,9 +30,23 @@ copy the handle.js invocation call to your console
 
 ## TODO
 
-* fix borked ts or m3u8 (the playback is weird)
+### 1
+
+m3u8 almost perfect
+
+	ffprobe -v quiet -show_entries format=start_time,duration <file>.ts
+
+start_time accumulation logic not clear
+
+https://trac.ffmpeg.org/ticket/3353
+
+### 2 bg tasks
+
 * learn how to generate this tasks in the bg
 * offer API to query for task completion
+
+### 3 live 
+
 * support live streaming
 
 
