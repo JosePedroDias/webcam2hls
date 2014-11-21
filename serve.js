@@ -6,7 +6,7 @@ var files = {
 	'/MediaStreamRecorder.js':  ['application/javascript', fs.readFileSync('node_modules/msr/MediaStreamRecorder.js').toString()]
 };
 
-var PORT = 8000;
+var PORT = 8001;
 
 var respond = function(res, pair, code) {
 	res.writeHeader(code || 200, {'Content-Type': pair[0]});
@@ -25,11 +25,11 @@ http.createServer(function(req, res) {
     	var parts = u.split('/');
     	var n = parts[2];
     	var c = parts[3];
-    	var f = n + '_' + c + '.webm';
-    	var msg = ['got', n, c, '->', f].join(' ');
+    	var fn = n + '_' + c + '.webm';
+    	var msg = ['got', n, c, '->', fn].join(' ');
 		console.log(msg);
 
-		var stream = fs.createWriteStream(f, {encoding:'binary'});
+		var stream = fs.createWriteStream(fn, {encoding:'binary'});
 		/*stream.on('end', function() {
 			respond(res, ['text/plain', msg]);
 		});*/
