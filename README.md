@@ -9,7 +9,7 @@ capturing `video/webm` 10 second files to the server.
 
 Using the [ffmpeg toolset](https://www.ffmpeg.org/) to do the video processing heavy-lifting tasks (probing video info and webm to mpegts conversion).
 
-Besides the main server.js, handle.js does the format conversion and m3u8 generation - will probably invoke these tasks automatically soon.
+Besides the main `server.js`, `handle.js` does the format conversion and m3u8 generation - the server will probably invoke these tasks automatically soon.
 
 **NOTE:** For capturing purposes, Google Chrome only captures video, while Firefox captures both video and audio.
 
