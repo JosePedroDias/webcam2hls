@@ -10,6 +10,24 @@ The plans are to convert the webm files into HLS metadata + MPEG-TS files.
 
 
 
+## How to use
+
+	node serve &
+
+in the browser, visit `http://127.0.0.1:8001`
+
+accept video and mic sharing notification
+
+press start
+
+...press stop after some 3s packets have been sent
+
+copy the handle.js invocation call to your console
+	
+	ffplay|vlc|mplayer <name>.m3u8
+
+
+
 ## TODO
 
 * fix borked ts or m3u8 (the playback is weird)
@@ -39,4 +57,5 @@ Sample HLS files:
 Spec notes
 
 * EXT-X-TARGETDURATION http://tools.ietf.org/html/draft-pantos-http-live-streaming-13#section-3.4.2
+* EXT-X-ALLOW-CACHE http://www.wowza.com/forums/content.php?496-How-to-control-Apple-HLS-client-caching-%28EXT-X-ALLOW-CACHE%29
 * EXTINF http://tools.ietf.org/html/draft-pantos-http-live-streaming-13#section-3.3.2

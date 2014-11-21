@@ -34,8 +34,8 @@
 
 		<script>
 			var mediaConstraints = {
-			    audio: !!navigator.mozGetUserMedia, // don't forget audio!
-			    video: true                         // don't forget video!
+			    audio: !!navigator.mozGetUserMedia, // ffox-only
+			    video: true // chrome too
 			};
 
 			navigator.getUserMedia(mediaConstraints, onMediaSuccess, onMediaError);
@@ -83,6 +83,7 @@
 			var mediaRecorder;
 			var count = 0;
 			var name = randomString();
+			log('once done: node handle.js ' + name);
 
 			function onMediaSuccess(stream) {
 				//log('media success');
