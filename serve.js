@@ -34,7 +34,12 @@ http.createServer(function(req, res) {
     	var parts = u.split('/');
     	var n = parts[2];
     	var c = parts[3];
-    	var fn = n + '_' + c + '.webm';
+
+    	if (c === '00000') {
+    		fs.mkdirSync('videos/' + n);
+    	}
+
+    	var fn = 'videos/' + n + '/' + c + '.webm';
     	var msg = ['got', n, c, '->', fn].join(' ');
 		console.log(msg);
 

@@ -38,11 +38,18 @@
 
 		<script>
 			var mediaConstraints = {
-			    audio: !!navigator.mozGetUserMedia, // ffox-only
+			    //audio: !!navigator.mozGetUserMedia, // ffox-only
+			    audio: false,
 			    video: true // chrome too
 			};
 
 			navigator.getUserMedia(mediaConstraints, onMediaSuccess, onMediaError);
+
+			function zeroPad(n, chars) {
+				var s = '' + n;
+				var l = s.length;
+				return new Array(chars - l + 1).join('0') + s;
+			}
 
 			function log(msg) {
 				var el = document.createElement('div');
@@ -97,9 +104,10 @@
 			    mediaRecorder.mimeType = 'video/webm';
 			    
 			    mediaRecorder.ondataavailable = function(blob) {
-			    	log('sending chunk ' + name + ' #' + count + '...');
+			    	var count2 = zeroPad(count, 5);
+			    	log('sending chunk ' + name + ' #' + count2 + '...');
 			    	
-			    	send('/chunk/' + name + '/' + count, blob);
+			    	send('/chunk/' + name + '/' + count2, blob);
 			    	//makeABlob(count, blob);
 
 			    	++count;
