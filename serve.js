@@ -30,12 +30,21 @@ http.createServer(function(req, res) {
     if (f) {
     	respond(res, f);	
     }
+    else if ((/^\/videos\/?$/).test(u)) {
+    	fs.readdir('videos', function(err, dirs) {
+    		if (err) {
+    			return respond(res, ['text/plain', err.toString(), 500]);
+    		}
+    		dirs = JSON.stringify(dirs);
+    		respond(res, ['application/json', dirs]);
+    	});
+    }
     else if (u.indexOf('/chunk/') === 0) {
     	var parts = u.split('/');
     	var n = parts[2];
     	var c = parts[3];
 
-    	if (c === '00000') {
+    	if ((/^0+$/).test(c)) {
     		fs.mkdirSync('videos/' + n);
     	}
 
