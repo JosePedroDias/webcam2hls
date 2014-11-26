@@ -2,12 +2,12 @@
 
 My idea is to make use of the [MediaStream Recording API](http://www.w3.org/TR/mediastream-recording/)
 to stream desktop or mobile video on the fly to the [HTTP Live Streaming](https://developer.apple.com/streaming/) format,
-for other terminals to consume.
+for other terminals to consume.  
+The server receives the webm files, converts them to mpegts files, updates the playlist.m3u8 and hosts all these correctly, live.
 
 I'm using [MediaStreamRecorder](https://github.com/streamproc/MediaStreamRecorder) to polyfill the MediaStream Recording API,
-capturing `video/webm` 10 second files to the server.
-
-Using the [ffmpeg toolset](https://www.ffmpeg.org/) to do the video processing heavy-lifting tasks (probing video info and webm to mpegts conversion).
+capturing `video/webm` 10 second files to the server.  
+The [ffmpeg toolset](https://www.ffmpeg.org/) is used to do the video processing heavy-lifting tasks (probing video info and webm to mpegts conversion).
 
 **NOTE:** For capturing purposes, Google Chrome only captures video, while Firefox captures both video and audio.
 
@@ -64,16 +64,15 @@ in the browser, visit `http://<host>:8001`
 
 accept video and mic sharing notification
 
-press start
+press `start`
 
 after the first chunk is sent and processed (in 10-15 seconds)
-you'll be able to use the url:
-http://<host>:8001/videos/<hash>/playlist.m3u8`
-on a video player, ffplay|vlc|mplayer...
-During live recording, the playlist returns only the last N chunks
-on purpose.
+you'll be able to use the URL:
+`http://<host>:8001/videos/<hash>/playlist.m3u8`
+on a browser video player, ffplay|vlc|mplayer...  
+During live recording, the playlist returns only the last N chunks on purpose.
 
-When you press stop the last chunk is marked as last and
+When you press `stop` the last chunk is marked as last and
 the playlist gets closed, so the whole recording can be replayed later.
 
 Besides capturing webms and converting to HLS,
