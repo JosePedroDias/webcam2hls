@@ -1,5 +1,9 @@
-var fs = require('fs');
+var fs   = require('fs');
 var http = require('http');
+
+var videoUtils = require('./videoUtils');
+
+
 
 var files = {
 	'/':                        ['text/html',              fs.readFileSync('page.html').toString()],
@@ -15,13 +19,35 @@ var mimeTypes = {
 	'm3u8': 'application/x-mpegURL'
 };
 
-var PORT = 8001;
+var fileDataArrs = {};
 
-var respond = function(res, pair, code) {
-	res.writeHeader(code || 200, {'Content-Type': pair[0]});
+var PORT = 8001;
+var LIVE = true;
+var PREV_ITEMS_IN_LIVE = 4;
+
+
+
+function lastN(arr, n) { // non-destructive
+	arr = arr.slice();
+	var l = arr.length;
+	var i = l - n;
+	if (i < 0) { i = 0; }
+	return arr.splice(i, n);
+}
+
+
+
+function respond(res, pair, code) {
+	res.writeHeader(
+		code || 200,
+		{
+			'Content-Type':                pair[0],
+			'Access-Control-Allow-Origin': '*'
+		}
+	);
 	res.write(pair[1]);  
 	res.end();
-};
+}
 
 http.createServer(function(req, res) {
 	var u = req.url;
@@ -41,18 +67,22 @@ http.createServer(function(req, res) {
     }
     else if (u.indexOf('/chunk/') === 0) {
     	var parts = u.split('/');
-    	var n = parts[2];
-    	var c = parts[3];
+    	var prefix = parts[2];
+    	var num = parts[3];
+    	var isFirst = false;
+    	var isLast = !!parts[4];
 
-    	if ((/^0+$/).test(c)) {
-    		fs.mkdirSync('videos/' + n);
+    	if ((/^0+$/).test(num)) {
+    		fs.mkdirSync('videos/' + prefix);
+    		isFirst = true;
     	}
 
-    	var fn = 'videos/' + n + '/' + c + '.webm';
-    	var msg = ['got', n, c, '->', fn].join(' ');
+    	var fp = 'videos/' + prefix + '/' + num + '.webm';
+    	var msg = 'got ' + fp;
 		console.log(msg);
+		console.log('isFirst:%s, isLast:%s', isFirst, isLast);
 
-		var stream = fs.createWriteStream(fn, {encoding:'binary'});
+		var stream = fs.createWriteStream(fp, {encoding:'binary'});
 		/*stream.on('end', function() {
 			respond(res, ['text/plain', msg]);
 		});*/
@@ -62,6 +92,46 @@ http.createServer(function(req, res) {
 		req.pipe(stream);
 		req.on('end', function() {
 			respond(res, ['text/plain', msg]);
+
+			if (!LIVE) { return; }
+
+			videoUtils.findVideoDuration(fp, function(err, duration) {
+				if (err) { return console.error(err); }
+				console.log('duration: %s', duration.toFixed(2));
+
+				var fd = {
+					fileName: num + '.webm',
+					filePath: fp,
+					duration: duration
+				};
+
+				var fileDataArr;
+				if (isFirst) {
+					fileDataArr = [];
+					fileDataArrs[ prefix ] = fileDataArr;
+				}
+				else {
+					fileDataArr = fileDataArrs[ prefix ];
+				}
+				fileDataArr.push(fd);
+
+				videoUtils.computeStartTimes(fileDataArr);
+
+				videoUtils.webm2Mpegts(fd, function(err, mpegtsFp) {
+					if (err) { return console.error(err); }
+					console.log('created %s', mpegtsFp);
+					
+					var playlistFp = 'videos/' + prefix + '/playlist.m3u8';
+
+					var fileDataArr2 = (isLast ? fileDataArr : lastN(fileDataArr, PREV_ITEMS_IN_LIVE));
+
+					var action = (isFirst ? 'created' : (isLast ? 'finished' : 'updated') );
+
+					videoUtils.generateM3u8Playlist(fileDataArr2, playlistFp, !isLast, function(err) {
+						console.log('playlist %s %s', playlistFp, (err ? err.toString() : action) );
+					});
+				});
+			});
 		});
     }
     else {
@@ -94,10 +164,11 @@ http.createServer(function(req, res) {
 				var rangeS = ['bytes ', start, '-', end, '/', total].join('');
 
 				res.writeHead(206, { // ranged download
-					'Content-Range':  rangeS,
-					'Accept-Ranges':  'bytes',
-					'Content-Length': chunkSize,
-					'Content-Type':   mimeType
+					'Content-Range':               rangeS,
+					'Accept-Ranges':               'bytes',
+					'Content-Length':              chunkSize,
+					'Content-Type':                mimeType,
+					'Access-Control-Allow-Origin': '*'
 				});
 
 				console.log([u, 206, mimeType, rangeS].join(' '));
@@ -105,8 +176,9 @@ http.createServer(function(req, res) {
 			}
 			else { // regular request
 				res.writeHead(200, { // regular download
-					'Content-Length': total,
-					'Content-Type':   mimeType
+					'Content-Length':              total,
+					'Content-Type':                mimeType,
+					'Access-Control-Allow-Origin': '*'
 				});
 				console.log([u, 200, mimeType, 'all'].join(' '));
 				fs.createReadStream(path).pipe(res);

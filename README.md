@@ -9,8 +9,6 @@ capturing `video/webm` 10 second files to the server.
 
 Using the [ffmpeg toolset](https://www.ffmpeg.org/) to do the video processing heavy-lifting tasks (probing video info and webm to mpegts conversion).
 
-Besides the main `server.js`, `handle.js` does the format conversion and m3u8 generation - the server will probably invoke these tasks automatically soon.
-
 **NOTE:** For capturing purposes, Google Chrome only captures video, while Firefox captures both video and audio.
 
 
@@ -62,29 +60,38 @@ we will now compile ffmpeg from source
 
 	node serve.js &
 
-in the browser, visit `http://127.0.0.1:8001`
+in the browser, visit `http://<host>:8001`
 
 accept video and mic sharing notification
 
 press start
 
-...press stop after some packets have been sent
+after the first chunk is sent and processed (in 10-15 seconds)
+you'll be able to use the url:
+http://<host>:8001/videos/<hash>/playlist.m3u8`
+on a video player, ffplay|vlc|mplayer...
+During live recording, the playlist returns only the last N chunks
+on purpose.
 
-copy the handle.js invocation call to your console, ex:
+When you press stop the last chunk is marked as last and
+the playlist gets closed, so the whole recording can be replayed later.
 
-    node handle.js <name>
-
-play the resulting HLS video:
-	
-	ffplay|vlc|mplayer <name>.m3u8
-
-Besides the app at / and the MediaStreamRecorder script,
+Besides capturing webms and converting to HLS,
 the server also serves video files correctly
 (with ranged request support and correct mime types for `mp4`, `webm`, `m3u8` and `ts` files).
 
 
 
 ## TODO
+
+
+### improve page.html
+
+* display recording time
+* hide irrelevant buttons
+* improve dimensions
+* if possible, display stream optionally
+
 
 ### m3u8 integrity
 
@@ -96,22 +103,23 @@ start_time accumulation logic not clear
 
 https://trac.ffmpeg.org/ticket/3353
 
-### firefox sent files not correctly processed
 
-### bg tasks
+### firefox problem
 
-* learn how to generate this tasks in the bg
-* offer API to query for task completion
+sent files not correctly processed (ffprobe returns no duration!!!)
 
-### live streaming
 
-* support live streaming
+### multi-profile
+
+* generate index playlist (listing profile playlists)
+* generate multiple profile mpegts files at once
+* update multiple playlists
 
 
 
 ## Example ffmpeg commands
 
-	ffprobe -v quiet -print_format json -show_format j6cffc_0.ts
+	ffprobe -v quiet -print_format json -show_format -show_streams j6cffc_0.ts
 
 	ffmpeg -i j6cffc_0.webm -vcodec libx264 -acodec libfaac -r 25 -profile:v baseline -b:v 800k -b:a 48k -f mpegts -y j6cffc_0.ts
 
@@ -131,3 +139,5 @@ Spec notes
 * EXT-X-TARGETDURATION http://tools.ietf.org/html/draft-pantos-http-live-streaming-13#section-3.4.2
 * EXT-X-ALLOW-CACHE http://www.wowza.com/forums/content.php?496-How-to-control-Apple-HLS-client-caching-%28EXT-X-ALLOW-CACHE%29
 * EXTINF http://tools.ietf.org/html/draft-pantos-http-live-streaming-13#section-3.3.2
+* EXT-X-ENDLIST - if ommitted, player assumes live and keeps fetching playlist
+

@@ -32,8 +32,8 @@
 		<div class="notice">please accept webcam permissions above</div>
 
 		<div class="gui">
-			<button onclick="log('starting'); mediaRecorder.start(DT);">start</button>
-			<button onclick="log('stopping'); mediaRecorder.stop(); log('once done: node handle.js ' + name)">stop</button>
+			<button id="b1" onclick="log('starting'); mediaRecorder.start(DT);">start</button>
+			<button id="b2" onclick="log('stopping'); stopped = true; mediaRecorder.stop();">stop</button>
 		</div>
 
 		<script>
@@ -92,6 +92,7 @@
 			}
 
 			var mediaRecorder;
+			var stopped = false;
 			var count = 0;
 			var name = randomString();
 
@@ -107,7 +108,7 @@
 			    	var count2 = zeroPad(count, 5);
 			    	log('sending chunk ' + name + ' #' + count2 + '...');
 			    	
-			    	send('/chunk/' + name + '/' + count2, blob);
+			    	send('/chunk/' + name + '/' + count2 + (stopped ? '/finish' : ''), blob);
 			    	//makeABlob(count, blob);
 
 			    	++count;
