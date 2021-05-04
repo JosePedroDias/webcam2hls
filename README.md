@@ -1,5 +1,5 @@
 **This spike was WORK IN PROGRESS and is UNSUPPORTED.**
-
+Get rid of this
 My idea is to make use of the [MediaStream Recording API](http://www.w3.org/TR/mediastream-recording/)
 to stream desktop or mobile video on the fly to the [HTTP Live Streaming](https://developer.apple.com/streaming/) format,
 for other terminals to consume.  
